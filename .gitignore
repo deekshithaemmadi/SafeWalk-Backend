@@ -37,3 +37,9 @@ build/
 
 ### VS Code ###
 .vscode/
+target/
+.env
+*.log
+cp.txt
+
+verify-local.properties

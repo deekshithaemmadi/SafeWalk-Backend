@@ -31,11 +31,9 @@ public class JwtService {
             @Value("${safewalk.jwt.expiration-ms}") long expirationMs) {
         // HS256 requires a key of at least 256 bits (32 bytes).
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length < 32) {
-            // Pad deterministically to satisfy the minimum without changing a valid secret.
-            byte[] padded = new byte[32];
-            System.arraycopy(keyBytes, 0, padded, 0, keyBytes.length);
-            keyBytes = padded;
+        if (secret.isBlank() || keyBytes.length < 32) {
+            throw new IllegalStateException(
+                    "safewalk.jwt.secret (JWT_SECRET) must be at least 32 bytes for HS256 signing.");
         }
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.expirationMs = expirationMs;

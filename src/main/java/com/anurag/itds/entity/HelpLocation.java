@@ -73,7 +73,7 @@ public class HelpLocation {
     private String phone;
 
     /** Women's help centres: support sectors. */
-    @Column(name = "support_sectors", length = 500)
+    @Column(name = "support_sectors", length = 1000)
     private String supportSectors;
 
     /** Women's help centres: tier label. */
@@ -98,6 +98,16 @@ public class HelpLocation {
 
     protected HelpLocation() {
         // for JPA
+    }
+
+    /**
+     * @param sourceKey stable natural key derived from the source record, used to
+     *                  deduplicate re-imports (unique in the database)
+     */
+    public HelpLocation(HelpLocationType type, String name, String sourceKey) {
+        this.type = type;
+        this.name = name;
+        this.sourceKey = sourceKey;
     }
 
     @PrePersist

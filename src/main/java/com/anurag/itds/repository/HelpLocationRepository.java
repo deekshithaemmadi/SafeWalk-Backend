@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface HelpLocationRepository extends JpaRepository<HelpLocation, Long> {
@@ -27,6 +28,7 @@ public interface HelpLocationRepository extends JpaRepository<HelpLocation, Long
     @Query("""
             SELECT h FROM HelpLocation h
             WHERE (:type IS NULL OR h.type = :type)
+              AND (:district IS NULL OR LOWER(h.district) = LOWER(:district))
               AND (
                     :q IS NULL
                     OR LOWER(h.name) LIKE LOWER(CONCAT('%', :q, '%'))
@@ -36,5 +38,13 @@ public interface HelpLocationRepository extends JpaRepository<HelpLocation, Long
             """)
     Page<HelpLocation> search(@Param("type") HelpLocationType type,
                               @Param("q") String q,
+                              @Param("district") String district,
                               Pageable pageable);
+
+    List<HelpLocation> findByLatitudeIsNotNullAndLongitudeIsNotNull();
+
+    long countByType(HelpLocationType type);
+
+    @Query("SELECT DISTINCT h.source FROM HelpLocation h WHERE h.source IS NOT NULL ORDER BY h.source")
+    List<String> findDistinctSources();
 }

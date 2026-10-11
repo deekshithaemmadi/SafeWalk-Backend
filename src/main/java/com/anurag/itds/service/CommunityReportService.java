@@ -59,7 +59,7 @@ public class CommunityReportService {
     @Transactional(readOnly = true)
     public Page<CommunityReportResponse> listPermitted(Long userId, ReportStatus status,
                                                        String category, Pageable pageable) {
-        return reportRepository.findPermitted(userId, ReportStatus.VERIFIED, category, pageable)
+        return reportRepository.findPermitted(userId, ReportStatus.VERIFIED, status, category, pageable)
                 .map(Dtos::toReportResponse);
     }
 

@@ -57,8 +57,10 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // --- Public endpoints ---
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/help-locations", "/api/help-locations/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/safety-data/**").permitAll()
                         .requestMatchers("/api/geocode", "/api/route").permitAll()
                         // Moderation is restricted to moderators (authorized users only).
                         .requestMatchers(HttpMethod.POST, "/api/community-reports/*/moderate").hasRole("MODERATOR")
@@ -67,10 +69,10 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                writeError(response, HttpStatus.UNAUTHORIZED,
+                                writeError(request, response, HttpStatus.UNAUTHORIZED,
                                         "Authentication required. Please sign in."))
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                writeError(response, HttpStatus.FORBIDDEN,
+                                writeError(request, response, HttpStatus.FORBIDDEN,
                                         "You do not have permission to perform this action."))
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -88,7 +90,7 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    private void writeError(HttpServletResponse response, HttpStatus status, String message) throws java.io.IOException {
+    private void writeError(jakarta.servlet.http.HttpServletRequest request, HttpServletResponse response, HttpStatus status, String message) throws java.io.IOException {
         response.setStatus(status.value());
         response.setContentType("application/json");
         Map<String, Object> body = new HashMap<>();
@@ -96,6 +98,7 @@ public class SecurityConfig {
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         body.put("message", message);
+        body.put("path", request.getRequestURI());
         // Spring Boot 4 uses Jackson 3 (tools.jackson.* packages).
         new tools.jackson.databind.ObjectMapper().writeValue(response.getOutputStream(), body);
     }

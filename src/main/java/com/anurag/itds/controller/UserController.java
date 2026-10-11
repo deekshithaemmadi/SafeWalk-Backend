@@ -1,5 +1,8 @@
 package com.anurag.itds.controller;
 
+import com.anurag.itds.dto.ChangePasswordRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import com.anurag.itds.dto.UpdateProfileRequest;
 import com.anurag.itds.dto.UserResponse;
 import com.anurag.itds.security.CurrentUserProvider;
@@ -35,5 +38,12 @@ public class UserController {
     @PutMapping("/me")
     public UserResponse updateMe(@Valid @RequestBody UpdateProfileRequest request) {
         return userService.updateProfile(currentUserProvider.requireCurrentUserId(), request);
+    }
+
+    /** Changes the signed-in user's password. Existing JWTs stay valid until they expire. */
+    @PutMapping("/me/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(currentUserProvider.requireCurrentUserId(), request);
     }
 }

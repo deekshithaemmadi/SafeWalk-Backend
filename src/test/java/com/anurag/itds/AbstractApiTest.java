@@ -53,7 +53,7 @@ public abstract class AbstractApiTest {
         return jwtService.generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
-    protected RequestBuilder authed(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder builder, User user) {
+    protected org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder authed(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder builder, User user) {
         return builder.header("Authorization", "Bearer " + tokenFor(user));
     }
 

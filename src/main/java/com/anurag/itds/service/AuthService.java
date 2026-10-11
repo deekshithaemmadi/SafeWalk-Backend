@@ -113,9 +113,21 @@ public class AuthService {
             if (req == null) {
                 continue;
             }
-            String phone = req.phone() == null ? "" : req.phone().trim();
-            if (phone.isEmpty()) {
+            String name = trimToEmpty(req.name());
+            String phone = trimToEmpty(req.phone());
+            String relation = trimToEmpty(req.relation());
+            if (name.isEmpty() && phone.isEmpty() && relation.isEmpty()) {
+                // Completely blank optional rows from the signup form are ignored.
                 continue;
+            }
+            if (name.isEmpty() || relation.isEmpty() || phone.isEmpty()) {
+                throw new BadRequestException("Each emergency contact needs a name, phone number and relation.");
+            }
+            if (!phone.matches("\\d{10}")) {
+                throw new BadRequestException("Emergency contact phone number must be exactly 10 digits.");
+            }
+            if (name.length() > 150 || relation.length() > 80) {
+                throw new BadRequestException("Emergency contact name or relation is too long.");
             }
             if (!seenPhones.add(phone)) {
                 throw new BadRequestException("Emergency contacts must have distinct phone numbers.");
@@ -125,12 +137,16 @@ public class AuthService {
             }
             EmergencyContact contact = new EmergencyContact(
                     user,
-                    req.name().trim(),
+                    name,
                     phone,
-                    req.relation().trim()
+                    relation
             );
             saved.add(contactRepository.save(contact));
         }
         return saved;
+    }
+
+    private static String trimToEmpty(String value) {
+        return value == null ? "" : value.trim();
     }
 }

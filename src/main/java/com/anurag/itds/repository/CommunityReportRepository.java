@@ -41,6 +41,7 @@ public interface CommunityReportRepository extends JpaRepository<CommunityReport
     @Query("""
             SELECT r FROM CommunityReport r
             WHERE (r.user.id = :userId OR r.status = :publicStatus)
+              AND (:status IS NULL OR r.status = :status)
               AND (
                     :category IS NULL
                     OR LOWER(r.category) LIKE LOWER(CONCAT('%', :category, '%'))
@@ -48,6 +49,7 @@ public interface CommunityReportRepository extends JpaRepository<CommunityReport
             """)
     Page<CommunityReport> findPermitted(@Param("userId") Long userId,
                                         @Param("publicStatus") ReportStatus publicStatus,
+                                        @Param("status") ReportStatus status,
                                         @Param("category") String category,
                                         Pageable pageable);
 }

@@ -1,5 +1,10 @@
 package com.anurag.itds.service;
 
+import com.anurag.itds.dto.ChangePasswordRequest;
+import com.anurag.itds.exception.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.anurag.itds.dto.UpdateProfileRequest;
 import com.anurag.itds.dto.UserResponse;
 import com.anurag.itds.entity.User;
@@ -22,13 +27,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final EmergencyContactRepository contactRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
-                       EmergencyContactRepository contactRepository) {
+                       EmergencyContactRepository contactRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.contactRepository = contactRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = requireUser(userId);
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new BadRequestException("Current password is incorrect.");
+        }
+        if (request.currentPassword().equals(request.newPassword())) {
+            throw new BadRequestException("New password must be different from the current password.");
+        }
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        log.info("Password changed for user id={}", userId);
     }
 
     @Transactional(readOnly = true)

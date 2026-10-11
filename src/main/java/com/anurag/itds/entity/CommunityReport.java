@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -48,8 +47,8 @@ public class CommunityReport {
     @Column(name = "category", nullable = false, length = 120)
     private String category;
 
-    @Lob
-    @Column(name = "description", nullable = false)
+    // Matches the TEXT column created by V2 (Hibernate validate would reject @Lob/CLOB).
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "location", length = 255)

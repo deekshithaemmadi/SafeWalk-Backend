@@ -1,5 +1,9 @@
 package com.anurag.itds.controller;
 
+import com.anurag.itds.dto.HelpLocationMetaResponse;
+import com.anurag.itds.dto.NearbyHelpLocationResponse;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
 import com.anurag.itds.dto.HelpLocationResponse;
 import com.anurag.itds.service.HelpLocationService;
 import org.springframework.data.domain.Page;
@@ -29,5 +33,25 @@ public class HelpLocationController {
                                               @RequestParam(required = false) String district,
                                               Pageable pageable) {
         return helpLocationService.search(helpLocationService.parseType(type), q, district, pageable);
+    }
+
+    @GetMapping("/{id:\\d+}")
+    public HelpLocationResponse get(@PathVariable Long id) {
+        return helpLocationService.get(id);
+    }
+
+    @GetMapping("/nearby")
+    public List<NearbyHelpLocationResponse> nearby(@RequestParam double lat,
+                                                   @RequestParam double lon,
+                                                   @RequestParam(defaultValue = "5") double radiusKm,
+                                                   @RequestParam(required = false) String type,
+                                                   @RequestParam(defaultValue = "20") int limit) {
+        return helpLocationService.nearby(lat, lon, radiusKm, helpLocationService.parseType(type), limit);
+    }
+
+    /** Dataset provenance, counts and limitations (the directory is static, not live). */
+    @GetMapping("/meta")
+    public HelpLocationMetaResponse meta() {
+        return helpLocationService.meta();
     }
 }
