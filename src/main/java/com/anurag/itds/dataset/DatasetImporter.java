@@ -169,13 +169,19 @@ public class DatasetImporter {
             }
             String phone = digitsOrNull(row.get("Phone"));
             String locality = clean(row.get("Area"));
+            Double lat = parseDouble(row.get("latitude"));
+            Double lon = parseDouble(row.get("longitude"));
+            if (!validCoordinates(lat, lon)) {
+                lat = null;
+                lon = null;
+            }
             upsert(existing, stats, HelpLocationType.POLICE, name, key, h -> {
                 h.setCategory("Police Station");
                 h.setDistrict("Hyderabad");
                 h.setLocality(locality);
                 h.setAddress(address);
                 return null;
-            }, null, null, phone, null, null, null, POLICE_SOURCE);
+            }, lat, lon, phone, null, null, null, POLICE_SOURCE);
         }
         return stats;
     }
@@ -199,13 +205,19 @@ public class DatasetImporter {
             String lowerAddress = address == null ? "" : address.toLowerCase(Locale.ROOT);
             String district = lowerAddress.contains("hyderabad") || lowerAddress.contains("secunderabad")
                     ? "Hyderabad" : null;
+            Double lat = parseDouble(row.get("latitude"));
+            Double lon = parseDouble(row.get("longitude"));
+            if (!validCoordinates(lat, lon)) {
+                lat = null;
+                lon = null;
+            }
             upsert(existing, stats, HelpLocationType.WOMEN_HELP, name, key, h -> {
                 h.setCategory(clean(row.get("support_type")));
                 h.setDistrict(district);
                 h.setLocality(null);
                 h.setAddress(address);
                 return null;
-            }, null, null, null, clean(row.get("sectors")), clean(row.get("tier")), null, WOMEN_HELP_SOURCE);
+            }, lat, lon, null, clean(row.get("sectors")), clean(row.get("tier")), null, WOMEN_HELP_SOURCE);
         }
         return stats;
     }

@@ -69,8 +69,9 @@ class DatasetImporterTest {
 
         assertThat(all).filteredOn(h -> h.getType() == HelpLocationType.POLICE)
                 .allSatisfy(h -> {
-                    assertThat(h.getLatitude()).isNull();
-                    assertThat(h.getLongitude()).isNull();
+                    // The police stations CSV contains valid coordinates within the Telangana bounding box.
+                    assertThat(h.getLatitude()).isBetween(15.5, 20.0);
+                    assertThat(h.getLongitude()).isBetween(77.0, 81.5);
                     assertThat(h.getSource()).isEqualTo(DatasetImporter.POLICE_SOURCE);
                     if (h.getPhone() != null) {
                         assertThat(h.getPhone()).matches("\\d+");
@@ -79,7 +80,9 @@ class DatasetImporterTest {
                 .anySatisfy(h -> assertThat(h.getPhone()).isNull());
         assertThat(all).filteredOn(h -> h.getType() == HelpLocationType.WOMEN_HELP)
                 .allSatisfy(h -> {
-                    assertThat(h.getLatitude()).isNull();
+                    // The women help centres CSV contains valid coordinates within the Telangana bounding box.
+                    assertThat(h.getLatitude()).isBetween(15.5, 20.0);
+                    assertThat(h.getLongitude()).isBetween(77.0, 81.5);
                     assertThat(h.getPhone()).isNull();
                 })
                 .anySatisfy(h -> assertThat(h.getSupportSectors()).hasSizeGreaterThan(500));

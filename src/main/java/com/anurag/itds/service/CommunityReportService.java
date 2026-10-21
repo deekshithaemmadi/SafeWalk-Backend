@@ -46,14 +46,14 @@ public class CommunityReportService {
     @Transactional
     public CommunityReportResponse create(Long userId, CreateReportRequest request) {
         User user = requireUser(userId);
-        CommunityReport saved = reportRepository.save(new CommunityReport(
+        CommunityReport report = new CommunityReport(
                 user,
                 request.category().trim(),
-                request.description().trim()));
-        saved.setLocation(request.location());
-        saved.setLatitude(request.latitude());
-        saved.setLongitude(request.longitude());
-        return Dtos.toReportResponse(reportRepository.save(saved));
+                request.description().trim());
+        report.setLocation(request.location());
+        report.setLatitude(request.latitude());
+        report.setLongitude(request.longitude());
+        return Dtos.toReportResponse(reportRepository.save(report));
     }
 
     @Transactional(readOnly = true)

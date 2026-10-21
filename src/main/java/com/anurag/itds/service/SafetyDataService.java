@@ -113,14 +113,14 @@ public class SafetyDataService {
                                 + "within 50 m in one source are de-duplicated; the two source lists are not merged."),
                 new DatasetSourceResponse("Hyderabad police stations", "hyderabad_police_stations.csv", true,
                         helpLocationRepository.countByType(HelpLocationType.POLICE), "/api/help-locations?type=POLICE",
-                        "Names, areas, addresses and phones (some missing). No coordinates in the source, so these "
-                                + "are not returned by /nearby."),
+                        "Names, areas, addresses, phones (some missing) and coordinates. "
+                                + "Returned by /nearby when coordinates are present."),
                 new DatasetSourceResponse("Women help centres (selected)", "women_help_centres_selected.csv", true,
                         helpLocationRepository.countByType(HelpLocationType.WOMEN_HELP),
                         "/api/help-locations?type=WOMEN_HELP",
-                        "NGO/organisation directory with support type, sectors and tier. No coordinates or phone "
-                                + "numbers in the source. District is set to Hyderabad only when the address mentions "
-                                + "Hyderabad or Secunderabad."),
+                        "NGO/organisation directory with support type, sectors, tier and coordinates. "
+                                + "No phone numbers in the source. District is set to Hyderabad only when "
+                                + "the address mentions Hyderabad or Secunderabad."),
                 new DatasetSourceResponse("Crimes against women by category", "women_crime_categories.csv", true,
                         crimeRepository.count(), "/api/safety-data/women-crime-stats",
                         "Annual state-level counts for Andhra Pradesh (2011-2013) and Telangana (2011-2021)."),
